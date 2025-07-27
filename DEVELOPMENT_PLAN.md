@@ -64,6 +64,18 @@ Family Travel Sharing App that allows families to document and share travel expe
    - Enable route sharing within family groups
    - Fix TypeScript compilation errors for routes functionality
 
+7. **Dashboard Map Integration** ✅ **COMPLETED**
+   - Add central map to Dashboard showing all places and routes
+   - Implement route visualization with colored polylines
+   - Create MapLegend component for route identification
+   - Fix Dashboard layout responsiveness with minimum height constraints
+
+8. **Repository Setup** ✅ **COMPLETED**
+   - Create GitHub repository with comprehensive description
+   - Initialize git repository with all project files
+   - Create detailed initial commit with feature documentation
+   - Push complete project to GitHub at https://github.com/vitakul/travel-inspirator
+
 ### 🔄 In Progress Tasks
 
 - None currently
@@ -180,6 +192,19 @@ Family Travel Sharing App that allows families to document and share travel expe
 3. **Enhanced Search** - Create advanced filtering and search capabilities
 4. **Real-time Updates** - Implement live collaboration features
 5. **Mobile Optimization** - Ensure responsive design across all devices
+
+## GitHub Repository
+
+**Repository URL**: https://github.com/vitakul/travel-inspirator
+
+The complete Travel Inspirator project has been successfully pushed to GitHub with all implemented features including:
+- React + TypeScript + Supabase architecture
+- Interactive mapping with Leaflet.js  
+- Complete route creation system with waypoint management
+- Multi-language support (Czech/English)
+- Family group management
+- Currency selection and country flag detection
+- Responsive Dashboard with central map visualization
 
 ---
 

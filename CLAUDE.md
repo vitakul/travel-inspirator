@@ -15,6 +15,7 @@ A family travel sharing platform that allows families to document and share trav
   - WaypointList with drag & drop reordering and visual indicators
   - PlaceSelector with search and filtering capabilities
   - Enhanced database schema with route metadata and transport configuration
+- **Dashboard Map Integration**: Central map showing all places and routes with colored polylines
 - **Modal System**: Reusable modal components with proper z-index handling
 - **State Management**: Redux Toolkit with typed slices for auth, places, family, routes
 - **Database Schema**: Complete PostgreSQL schema with RLS policies and enhanced route functionality
@@ -22,6 +23,7 @@ A family travel sharing platform that allows families to document and share trav
 - **Settings Management**: User preferences for language, currency, and privacy settings
 - **Real-time Data**: Supabase subscriptions for live updates
 - **Responsive Design**: Mobile-first Tailwind CSS implementation
+- **GitHub Repository**: Complete project pushed to https://github.com/vitakul/travel-inspirator
 
 ### 🎯 Key User Flows
 1. **Authentication**: Sign up → Email confirmation → Sign in → Dashboard
@@ -324,6 +326,33 @@ supabase stop && supabase start
 - [ ] Production build successful
 - [ ] All tests passing
 
+## 🐙 GitHub Repository
+
+**Repository URL**: https://github.com/vitakul/travel-inspirator
+
+The complete Travel Inspirator project has been successfully pushed to GitHub with comprehensive documentation and all implemented features. The repository includes:
+
+### 📁 Repository Structure
+- Full React + TypeScript + Supabase project setup
+- Database migrations with PostgreSQL + PostGIS schema
+- Complete component library with route creation system
+- Multi-language translations (Czech/English)
+- Comprehensive documentation and setup guides
+
+### 🚀 Key Features Included
+- Interactive mapping with Leaflet.js and route visualization
+- Complete route builder with drag & drop waypoint management
+- Family group management with user permissions
+- Currency selection and country flag detection
+- Settings management with language preferences
+- Responsive Dashboard with central map showing places and routes
+
+### 📋 Development Resources
+- **Setup Scripts**: Database initialization and test data creation
+- **Type Definitions**: Generated TypeScript types from Supabase schema
+- **Development Workflow**: HMR setup with Vite and best practices
+- **Troubleshooting Guide**: Common issues and solutions
+
 ## 📋 Detailed Development Plan
 
 For comprehensive task tracking, implementation roadmap, and technical architecture details, see:
@@ -335,3 +364,4 @@ The development plan includes:
 - Technical architecture overview
 - Known issues and solutions
 - Next steps and priorities
+- GitHub repository information
