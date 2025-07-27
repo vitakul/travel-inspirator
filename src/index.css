@@ -1,0 +1,59 @@
+/* Leaflet CSS imports */
+@import 'leaflet/dist/leaflet.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  width: 100vw;
+  height: 100vh;
+}
+
+/* Fix for Leaflet marker icons */
+.leaflet-marker-icon {
+  background: transparent;
+}
+
+/* Ensure map doesn't interfere with modals */
+.leaflet-container {
+  z-index: 1;
+}
+
+/* Selected marker styling */
+.selected-marker {
+  filter: hue-rotate(200deg) brightness(1.2);
+  z-index: 1000 !important;
+}
+
+.leaflet-control-container {
+  z-index: 100;
+}
+
+.leaflet-popup {
+  z-index: 1000;
+}
+
+.leaflet-tooltip {
+  z-index: 1000;
+}
+
+/* Ensure modals appear above everything */
+.modal-overlay {
+  z-index: 10000 !important;
+  position: fixed !important;
+}
+
+/* Ensure modal content is always on top */
+.modal-overlay > div {
+  z-index: 10001 !important;
+}
