@@ -69,7 +69,7 @@ export const fetchRoutes = createAsyncThunk(
 export const fetchRouteWaypoints = createAsyncThunk(
   'routes/fetchRouteWaypoints',
   async (routeId: string) => {
-    const { data, error } = await supabase.rpc('get_route_waypoints', { route_id: routeId })
+    const { data, error } = await supabase.rpc('get_route_waypoints', { route_id_param: routeId })
     if (error) throw error
     return data as RouteWaypoint[]
   }
@@ -168,6 +168,37 @@ export const updateWaypoint = createAsyncThunk(
   }
 )
 
+// Update waypoint position (place coordinates)
+export const updateWaypointPosition = createAsyncThunk(
+  'routes/updateWaypointPosition',
+  async ({ 
+    place_id, 
+    latitude, 
+    longitude,
+    route_id
+  }: { 
+    place_id: string
+    latitude: number
+    longitude: number
+    route_id: string
+  }) => {
+    // Update the place coordinates
+    const { data, error } = await supabase
+      .from('places')
+      .update({
+        location: `POINT(${longitude} ${latitude})`
+      })
+      .eq('id', place_id)
+      .select()
+      .single()
+    
+    if (error) throw error
+    
+    // Return updated position for local state update
+    return { place_id, latitude, longitude, route_id }
+  }
+)
+
 // Remove waypoint from route
 export const removeWaypoint = createAsyncThunk(
   'routes/removeWaypoint',
@@ -230,6 +261,8 @@ const routesSlice = createSlice({
   reducers: {
     setSelectedRoute: (state, action: PayloadAction<RouteWithDetails | null>) => {
       state.selectedRoute = action.payload
+      // Clear waypoints when selecting a different route
+      state.routeWaypoints = []
     },
     clearError: (state) => {
       state.error = null
@@ -295,6 +328,17 @@ const routesSlice = createSlice({
         }
         if (state.selectedRoute?.id === action.payload.id) {
           state.selectedRoute = { ...state.selectedRoute, ...action.payload }
+        }
+      })
+      
+      // Update waypoint position
+      .addCase(updateWaypointPosition.fulfilled, (state, action) => {
+        const { place_id, latitude, longitude } = action.payload
+        // Update the waypoint position in local state
+        const waypointIndex = state.routeWaypoints.findIndex(wp => wp.place_id === place_id)
+        if (waypointIndex !== -1) {
+          state.routeWaypoints[waypointIndex].latitude = latitude
+          state.routeWaypoints[waypointIndex].longitude = longitude
         }
       })
       

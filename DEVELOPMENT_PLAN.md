@@ -76,6 +76,16 @@ Family Travel Sharing App that allows families to document and share travel expe
    - Create detailed initial commit with feature documentation
    - Push complete project to GitHub at https://github.com/vitakul/travel-inspirator
 
+9. **Route Visualization System** ✅ **COMPLETED**
+   - Create interactive RouteMap component with comprehensive path visualization
+   - Implement Leaflet Routing Machine with OSRM integration for real routing paths
+   - Add per-segment routing based on transport_to_next field (walking/driving/cycling)
+   - Create numbered waypoint markers with start/end indicators
+   - Implement drag & drop waypoint editing with database updates
+   - Add transport mode indicators between waypoints
+   - Fix RLS permissions for collaborative route editing
+   - Enhance route display with proper cleanup and real-time updates
+
 ### 🔄 In Progress Tasks
 
 - None currently
@@ -83,11 +93,6 @@ Family Travel Sharing App that allows families to document and share travel expe
 ### 📋 Pending Tasks
 
 #### High Priority
-- **Route Visualization**: Create RouteMap component with path visualization
-  - Implement interactive route map with Leaflet.js
-  - Add route path drawing between waypoints
-  - Display transport mode indicators
-  - Enable route editing from map interface
 
 #### Medium Priority
 - **Photo Management**: Add photo upload functionality with Supabase Storage
@@ -162,9 +167,13 @@ Family Travel Sharing App that allows families to document and share travel expe
 - Route management with waypoint ordering and transport configuration
 
 ### Map Integration
-- Leaflet.js with React wrapper
-- Custom MapController for automatic centering
+- Leaflet.js with React wrapper for interactive mapping
+- Leaflet Routing Machine with OSRM for real routing paths
+- Custom MapController for automatic centering and bounds fitting
 - PostGIS coordinate extraction with `get_places_with_coordinates()` function
+- RouteMap component with numbered waypoints and drag & drop editing
+- Per-segment routing based on transport modes (walking/driving/cycling)
+- Transport mode indicators and waypoint popups with editing capabilities
 
 ### Authentication Flow
 - Supabase Auth with protected routes
@@ -187,11 +196,10 @@ Family Travel Sharing App that allows families to document and share travel expe
 
 ## Next Steps
 
-1. **Route Visualization** - Create interactive RouteMap component with path visualization
-2. **Photo Upload Feature** - Add image management with Supabase Storage
-3. **Enhanced Search** - Create advanced filtering and search capabilities
-4. **Real-time Updates** - Implement live collaboration features
-5. **Mobile Optimization** - Ensure responsive design across all devices
+1. **Photo Upload Feature** - Add image management with Supabase Storage
+2. **Enhanced Search** - Create advanced filtering and search capabilities
+3. **Real-time Updates** - Implement live collaboration features
+4. **Mobile Optimization** - Ensure responsive design across all devices
 
 ## GitHub Repository
 
@@ -199,13 +207,17 @@ Family Travel Sharing App that allows families to document and share travel expe
 
 The complete Travel Inspirator project has been successfully pushed to GitHub with all implemented features including:
 - React + TypeScript + Supabase architecture
-- Interactive mapping with Leaflet.js  
+- Interactive mapping with Leaflet.js and Leaflet Routing Machine
 - Complete route creation system with waypoint management
+- Advanced route visualization with real routing paths and numbered waypoints
+- Drag & drop waypoint editing with database updates
+- Per-segment routing based on transport modes (walking/driving/cycling)
+- Transport mode indicators and comprehensive waypoint popups
 - Multi-language support (Czech/English)
-- Family group management
+- Family group management with collaborative editing
 - Currency selection and country flag detection
 - Responsive Dashboard with central map visualization
 
 ---
 
-*Last Updated: July 27, 2025*
+*Last Updated: July 30, 2025*

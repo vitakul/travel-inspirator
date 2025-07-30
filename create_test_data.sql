@@ -1,110 +1,17 @@
-#!/bin/bash
-
-# Recreate test users and seed data for Travel Inspirator
-# This script is DESTRUCTIVE - it will recreate test data
-
-set -e
-
-echo "🔄 Recreating test data for Travel Inspirator..."
-
-# Check if Supabase is running
-if ! curl -s http://127.0.0.1:54321/health > /dev/null; then
-    echo "Error: Supabase is not running. Please run 'supabase start' first."
-    exit 1
-fi
-
-# Clear existing auth users and data
-echo "🗑️ Clearing existing test data..."
-
-docker exec supabase_db_travel-inspirator psql -U postgres -d postgres << 'EOF'
--- Delete existing test data
-DELETE FROM public.photos WHERE created_by IN ('f47ac10b-58cc-4372-a567-0e02b2c3d479', 'f47ac10b-58cc-4372-a567-0e02b2c3d480');
-DELETE FROM public.route_places WHERE route_id = 'f47ac10b-58cc-4372-a567-0e02b2c3d495';
-DELETE FROM public.routes WHERE created_by IN ('f47ac10b-58cc-4372-a567-0e02b2c3d479', 'f47ac10b-58cc-4372-a567-0e02b2c3d480');
-DELETE FROM public.places WHERE created_by IN ('f47ac10b-58cc-4372-a567-0e02b2c3d479', 'f47ac10b-58cc-4372-a567-0e02b2c3d480');
-DELETE FROM public.family_members WHERE user_id IN ('f47ac10b-58cc-4372-a567-0e02b2c3d479', 'f47ac10b-58cc-4372-a567-0e02b2c3d480');
-DELETE FROM public.family_groups WHERE admin_id IN ('f47ac10b-58cc-4372-a567-0e02b2c3d479', 'f47ac10b-58cc-4372-a567-0e02b2c3d480');
-DELETE FROM public.users WHERE id IN ('f47ac10b-58cc-4372-a567-0e02b2c3d479', 'f47ac10b-58cc-4372-a567-0e02b2c3d480');
-DELETE FROM auth.identities WHERE user_id IN ('f47ac10b-58cc-4372-a567-0e02b2c3d479', 'f47ac10b-58cc-4372-a567-0e02b2c3d480');
-DELETE FROM auth.users WHERE email IN ('john@example.com', 'jane@example.com');
-EOF
-
-echo "✅ Test data cleared"
-
-# Create test users using Supabase Auth API
-echo "👤 Creating test users via Auth API..."
-
-# Create John Smith
-curl -X POST http://127.0.0.1:54321/auth/v1/admin/users \
-  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU" \
-  -H "Content-Type: application/json" \
-  -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0" \
-  -d '{
-    "email": "john@example.com",
-    "password": "password123",
-    "email_confirm": true,
-    "user_metadata": {
-      "name": "John Smith"
-    }
-  }' > /dev/null 2>&1
-
-echo "✅ John Smith created"
-
-# Create Jane Doe  
-curl -X POST http://127.0.0.1:54321/auth/v1/admin/users \
-  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU" \
-  -H "Content-Type: application/json" \
-  -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0" \
-  -d '{
-    "email": "jane@example.com", 
-    "password": "password123",
-    "email_confirm": true,
-    "user_metadata": {
-      "name": "Jane Doe"
-    }
-  }' > /dev/null 2>&1
-
-echo "✅ Jane Doe created"
-
-# Wait a moment for user creation to complete
-sleep 2
-
-# Get the actual user IDs from the auth system
-echo "🔍 Getting user IDs..."
-
-JOHN_ID=$(docker exec supabase_db_travel-inspirator psql -U postgres -d postgres -t -c "SELECT id FROM auth.users WHERE email = 'john@example.com';" | tr -d ' \n')
-JANE_ID=$(docker exec supabase_db_travel-inspirator psql -U postgres -d postgres -t -c "SELECT id FROM auth.users WHERE email = 'jane@example.com';" | tr -d ' \n')
-
-if [[ -z "$JOHN_ID" || -z "$JANE_ID" ]]; then
-    echo "❌ Failed to create users or get user IDs"
-    exit 1
-fi
-
-echo "✅ User IDs obtained: John($JOHN_ID), Jane($JANE_ID)"
-
-# Create user profiles and sample data
-echo "📊 Creating sample data..."
-
-docker exec supabase_db_travel-inspirator psql -U postgres -d postgres << EOF
--- Insert user profiles
-INSERT INTO public.users (id, email, name) VALUES 
-('${JOHN_ID}', 'john@example.com', 'John Smith'),
-('${JANE_ID}', 'jane@example.com', 'Jane Doe')
-ON CONFLICT (id) DO UPDATE SET 
-    name = EXCLUDED.name,
-    email = EXCLUDED.email;
+-- Create comprehensive test data for Travel Inspirator
+-- This file is executed by recreate_data.sh with user IDs as parameters
 
 -- Create family group
 INSERT INTO public.family_groups (id, name, admin_id) VALUES 
-('f47ac10b-58cc-4372-a567-0e02b2c3d490', 'Smith Family', '${JOHN_ID}')
+('f47ac10b-58cc-4372-a567-0e02b2c3d490', 'Smith Family', :john_id)
 ON CONFLICT (id) DO UPDATE SET 
     name = EXCLUDED.name,
     admin_id = EXCLUDED.admin_id;
 
 -- Add family members
 INSERT INTO public.family_members (group_id, user_id, role) VALUES 
-('f47ac10b-58cc-4372-a567-0e02b2c3d490', '${JOHN_ID}', 'admin'),
-('f47ac10b-58cc-4372-a567-0e02b2c3d490', '${JANE_ID}', 'member')
+('f47ac10b-58cc-4372-a567-0e02b2c3d490', :john_id, 'admin'),
+('f47ac10b-58cc-4372-a567-0e02b2c3d490', :jane_id, 'member')
 ON CONFLICT (group_id, user_id) DO UPDATE SET role = EXCLUDED.role;
 
 -- Add sample places including comprehensive route test data
@@ -120,7 +27,7 @@ INSERT INTO public.places (
     'monuments',
     5,
     'Historic castle complex and former residence of Bohemian kings',
-    '${JOHN_ID}',
+    :john_id,
     'f47ac10b-58cc-4372-a567-0e02b2c3d490',
     true,
     '{"entrance_fee": 15, "parking": false, "opening_hours": "9:00-17:00"}',
@@ -133,7 +40,7 @@ INSERT INTO public.places (
     'monuments',
     4,
     'Famous historic bridge over the Vltava River',
-    '${JOHN_ID}',
+    :john_id,
     'f47ac10b-58cc-4372-a567-0e02b2c3d490',
     true,
     '{"entrance_fee": 0, "parking": false, "best_time": "early morning"}',
@@ -146,7 +53,7 @@ INSERT INTO public.places (
     'natural_attractions',
     4,
     'Beautiful park with panoramic views of Prague',
-    '${JANE_ID}',
+    :jane_id,
     'f47ac10b-58cc-4372-a567-0e02b2c3d490',
     true,
     '{"entrance_fee": 0, "parking": true, "best_time": "sunset"}',
@@ -159,14 +66,14 @@ INSERT INTO public.places (
     'restaurants',
     5,
     'Historic brewery serving traditional Czech beer and food',
-    '${JOHN_ID}',
+    :john_id,
     'f47ac10b-58cc-4372-a567-0e02b2c3d490',
     false,
     '{"entrance_fee": 0, "parking": false, "reservation": "recommended"}',
     'Prague, Czech Republic'
 ),
 
--- Czech Republic Route Places (5 waypoints)
+-- Czech Republic Route Places (4 additional waypoints)
 (
     '11111111-58cc-4372-a567-0e02b2c3d001',
     'Český Krumlov Castle',
@@ -174,7 +81,7 @@ INSERT INTO public.places (
     'monuments',
     5,
     'UNESCO World Heritage castle complex in South Bohemia, one of the most important historic monuments in Central Europe.',
-    '${JOHN_ID}',
+    :john_id,
     'f47ac10b-58cc-4372-a567-0e02b2c3d490',
     true,
     '{"entrance_fee": 180, "currency": "CZK", "opening_hours": "9:00-17:00", "unesco": true}',
@@ -187,7 +94,7 @@ INSERT INTO public.places (
     'monuments',
     4,
     'Gothic castle founded in 1348 by Charles IV, Holy Roman Emperor-elect and King of Bohemia, built to house the crown jewels.',
-    '${JOHN_ID}',
+    :john_id,
     'f47ac10b-58cc-4372-a567-0e02b2c3d490',
     true,
     '{"entrance_fee": 330, "currency": "CZK", "opening_hours": "9:00-16:00", "reservation_required": true}',
@@ -200,7 +107,7 @@ INSERT INTO public.places (
     'natural_attractions',
     5,
     'Stunning national park known for its sandstone formations, deep valleys, and unique rock formations including the famous Pravčická brána arch.',
-    '${JOHN_ID}',
+    :john_id,
     'f47ac10b-58cc-4372-a567-0e02b2c3d490',
     true,
     '{"entrance_fee": 0, "currency": "CZK", "hiking_trails": true, "difficulty": "moderate"}',
@@ -213,7 +120,7 @@ INSERT INTO public.places (
     'monuments',
     5,
     'Gothic cathedral of St. Barbara, UNESCO World Heritage Site, masterpiece of late Gothic architecture.',
-    '${JOHN_ID}',
+    :john_id,
     'f47ac10b-58cc-4372-a567-0e02b2c3d490',
     true,
     '{"entrance_fee": 120, "currency": "CZK", "opening_hours": "9:00-18:00", "unesco": true}',
@@ -228,7 +135,7 @@ INSERT INTO public.places (
     'monuments',
     5,
     'Royal castle in Krakow, residence of Polish kings for centuries. Important symbol of Polish statehood and UNESCO World Heritage Site.',
-    '${JANE_ID}',
+    :jane_id,
     'f47ac10b-58cc-4372-a567-0e02b2c3d490',
     true,
     '{"entrance_fee": 25, "currency": "PLN", "opening_hours": "9:30-17:00", "unesco": true, "audio_guide": "available"}',
@@ -241,7 +148,7 @@ INSERT INTO public.places (
     'monuments',
     5,
     'Medieval market square in Krakow Old Town, one of the largest in Europe, surrounded by historic townhouses and featuring St. Marys Basilica.',
-    '${JANE_ID}',
+    :jane_id,
     'f47ac10b-58cc-4372-a567-0e02b2c3d490',
     true,
     '{"entrance_fee": 0, "currency": "PLN", "opening_hours": "24/7", "tower_climb": "15 PLN", "events": "flower market on Thursdays"}',
@@ -254,7 +161,7 @@ INSERT INTO public.places (
     'monuments',
     5,
     'Historic salt mine dating to 13th century, UNESCO World Heritage Site featuring underground chambers, sculptures, and chapels carved from salt.',
-    '${JANE_ID}',
+    :jane_id,
     'f47ac10b-58cc-4372-a567-0e02b2c3d490',
     true,
     '{"entrance_fee": 89, "currency": "PLN", "opening_hours": "7:30-19:30", "underground_tour": "2-3 hours", "temperature": "14°C"}',
@@ -267,7 +174,7 @@ INSERT INTO public.places (
     'natural_attractions',
     4,
     'Popular mountain resort town at the foot of Tatra Mountains, known for winter sports, hiking, and traditional highland culture.',
-    '${JANE_ID}',
+    :jane_id,
     'f47ac10b-58cc-4372-a567-0e02b2c3d490',
     true,
     '{"entrance_fee": 0, "currency": "PLN", "cable_car": "39 PLN", "season": "year-round", "activities": "skiing, hiking, shopping"}',
@@ -280,7 +187,7 @@ INSERT INTO public.places (
     'natural_attractions',
     5,
     'Largest and most famous lake in Tatra Mountains, glacial lake surrounded by towering peaks, accessible by scenic hiking trail.',
-    '${JANE_ID}',
+    :jane_id,
     'f47ac10b-58cc-4372-a567-0e02b2c3d490',
     true,
     '{"entrance_fee": 6, "currency": "PLN", "hiking_distance": "2km", "horse_cart": "available", "best_time": "morning for reflections"}',
@@ -303,7 +210,7 @@ INSERT INTO public.routes (
     'f47ac10b-58cc-4372-a567-0e02b2c3d495',
     'Prague Historic Walk',
     'A walking tour covering the main historic attractions of Prague',
-    '${JOHN_ID}',
+    :john_id,
     'f47ac10b-58cc-4372-a567-0e02b2c3d490',
     true,
     240,
@@ -316,7 +223,7 @@ INSERT INTO public.routes (
     '33333333-58cc-4372-a567-0e02b2c3d001',
     'Czech Republic Heritage Trail',
     'Comprehensive tour through Czech Republic most iconic castles and natural wonders, spanning multiple days through historic landmarks.',
-    '${JOHN_ID}',
+    :john_id,
     'f47ac10b-58cc-4372-a567-0e02b2c3d490',
     true,
     2880,
@@ -329,7 +236,7 @@ INSERT INTO public.routes (
     '44444444-58cc-4372-a567-0e02b2c3d001',
     'Poland Highlights Adventure',
     'Journey through southern Poland from Krakow historic sites to Tatra Mountains natural beauty, including underground salt mine exploration.',
-    '${JANE_ID}',
+    :jane_id,
     'f47ac10b-58cc-4372-a567-0e02b2c3d490',
     true,
     2160,
@@ -371,21 +278,3 @@ ON CONFLICT (route_id, place_id) DO UPDATE SET
     transport_to_next = EXCLUDED.transport_to_next,
     notes = EXCLUDED.notes,
     estimated_time = EXCLUDED.estimated_time;
-
-EOF
-
-echo "✅ Test data recreated successfully!"
-echo ""
-echo "🎯 Test accounts created:"
-echo "  📧 john@example.com (password: password123) - Family Admin"
-echo "  📧 jane@example.com (password: password123) - Family Member"
-echo ""
-echo "📊 Sample data includes:"
-echo "  👥 Smith Family group"
-echo "  📍 13 sample places (4 in Prague, 4 in Czech Republic, 5 in Poland)"
-echo "  🗺️ 3 sample routes:"
-echo "    • Prague Historic Walk (3 waypoints, walking)"
-echo "    • Czech Republic Heritage Trail (6 waypoints, mixed transport)"
-echo "    • Poland Highlights Adventure (5 waypoints, mixed transport)"
-echo ""
-echo "🚀 You can now sign in to the application at http://localhost:5173"

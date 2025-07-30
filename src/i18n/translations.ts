@@ -158,6 +158,23 @@ export const translations = {
     viewRoute: 'View Route',
     public: 'Public',
     private: 'Private',
+    
+    // Route Map
+    startPoint: 'Start Point',
+    endPoint: 'End Point',
+    waypoint: 'Waypoint',
+    estimatedTime: 'Estimated Time',
+    transportToNext: 'Transport to Next',
+    notes: 'Notes',
+    transport: 'Transport',
+    duration: 'Duration',
+    distance: 'Distance',
+    backToList: 'Back to List',
+    draggable: 'draggable',
+    editWaypoint: 'Edit Waypoint',
+    edit: 'Edit',
+    editRoute: 'Edit Route',
+    doneEditing: 'Done Editing',
   },
   
   cs: {
@@ -319,6 +336,23 @@ export const translations = {
     viewRoute: 'Zobrazit trasu',
     public: 'Veřejné',
     private: 'Soukromé',
+    
+    // Route Map
+    startPoint: 'Výchozí bod',
+    endPoint: 'Koncový bod',
+    waypoint: 'Zastávka',
+    estimatedTime: 'Odhadovaný čas',
+    transportToNext: 'Doprava k další',
+    notes: 'Poznámky',
+    transport: 'Doprava',
+    duration: 'Doba trvání',
+    distance: 'Vzdálenost',
+    backToList: 'Zpět na seznam',
+    draggable: 'přetažitelné',
+    editWaypoint: 'Upravit zastávku',
+    edit: 'Upravit',
+    editRoute: 'Upravit trasu',
+    doneEditing: 'Dokončit úpravy',
   }
 } as const
 

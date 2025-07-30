@@ -15,6 +15,16 @@ A family travel sharing platform that allows families to document and share trav
   - WaypointList with drag & drop reordering and visual indicators
   - PlaceSelector with search and filtering capabilities
   - Enhanced database schema with route metadata and transport configuration
+- **Advanced Route Visualization & Editing**: Complete interactive map-based route display and editing
+  - RouteMap component with real routing paths using Leaflet Routing Machine and OSRM
+  - Per-segment routing based on individual transport modes (walking/driving/cycling with distinct routing profiles)
+  - Visual differentiation with colors and line styles for each transport mode segment
+  - Numbered waypoint markers with distinct start (green), end (red), and waypoint (blue) indicators
+  - Drag & drop waypoint editing with database updates and real-time route recalculation
+  - Transport mode indicators between waypoints with popup information
+  - Comprehensive waypoint popups with inline editing capabilities (transport mode, estimated time, notes)
+  - Enhanced RLS permissions for collaborative route editing (migration 20240101000012)
+  - Robust route cleanup and state management for seamless updates
 - **Dashboard Map Integration**: Central map showing all places and routes with colored polylines
 - **Modal System**: Reusable modal components with proper z-index handling
 - **State Management**: Redux Toolkit with typed slices for auth, places, family, routes
@@ -39,13 +49,16 @@ A family travel sharing platform that allows families to document and share trav
 - **Test Accounts**: 
   - `john@example.com` / `password123` (Family Admin)
   - `jane@example.com` / `password123` (Family Member)
-- **Sample Data**: 4 places in Prague, 1 family group
-- **Route Testing**: Use existing places to create test routes with different difficulties and transport modes
+- **Sample Data**: 
+  - 13 sample places (4 Prague, 4 Czech Republic, 5 Poland)
+  - 3 comprehensive test routes with real waypoints and transport modes
+  - 1 family group with complete test scenarios
+- **Route Testing**: Advanced route visualization with OSRM real routing, numbered waypoints, drag & drop editing, and per-segment transport mode differentiation
 
 ## Tech Stack
 - **Frontend**: React 18+ with TypeScript, Tailwind CSS, Redux Toolkit
 - **Backend**: Supabase (PostgreSQL, Auth, Storage, Real-time)
-- **Maps**: Leaflet.js with OpenStreetMap
+- **Maps**: Leaflet.js with OpenStreetMap, Leaflet Routing Machine with OSRM
 - **Build Tool**: Vite
 - **Testing**: Jest
 - **Deployment**: Netlify
@@ -178,6 +191,7 @@ interface RootState {
 - `Modal` - Reusable modal with React Portal and z-index handling
 - `PlaceForm` - Comprehensive place creation with location autocomplete
 - `RouteBuilder` - Complete route creation form with waypoint management
+- `RouteMap` - Advanced route visualization with OSRM routing, numbered waypoints, and drag & drop editing
 - `WaypointList` - Drag & drop waypoint ordering with visual indicators
 - `PlaceSelector` - Modal for selecting places with search and filtering
 - `MapComponent` - Leaflet integration with click handlers and markers
@@ -340,9 +354,12 @@ The complete Travel Inspirator project has been successfully pushed to GitHub wi
 - Comprehensive documentation and setup guides
 
 ### 🚀 Key Features Included
-- Interactive mapping with Leaflet.js and route visualization
-- Complete route builder with drag & drop waypoint management
-- Family group management with user permissions
+- Advanced interactive mapping with Leaflet.js, Leaflet Routing Machine, and OSRM routing
+- Complete route builder with drag & drop waypoint management and real-time route visualization
+- Numbered waypoint markers with drag & drop editing and database updates
+- Per-segment routing based on transport modes (walking/driving/cycling)
+- Transport mode indicators and comprehensive waypoint popups with inline editing
+- Family group management with collaborative editing permissions
 - Currency selection and country flag detection
 - Settings management with language preferences
 - Responsive Dashboard with central map showing places and routes
